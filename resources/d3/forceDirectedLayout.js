@@ -55,7 +55,6 @@ function forceDirectedLayout(jsonFile) {
     var zoom = d3.behavior.zoom().scaleExtent([min_zoom, max_zoom])
     var g = svg.append("g");
     svg.style("cursor", "move");
-    console.log(jsonFile);
     var graph = JSON.parse(jsonFile);
 
 
@@ -64,6 +63,11 @@ function forceDirectedLayout(jsonFile) {
     graph.links.forEach(function (d) {
         linkedByIndex[d.source + "," + d.target] = true;
     });
+
+    $('#ex1').slider()
+        .on('slide', function(ev){
+            refreshComponents();
+        });
 
     function isConnected(a, b) {
         return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
@@ -361,28 +365,31 @@ function forceDirectedLayout(jsonFile) {
                     break;
             }
 
-            link.style("display", function (d) {
-                var flag = vis_by_type(d.source.type) && vis_by_type(d.target.type) && vis_by_node_score(d.source.score) && vis_by_node_score(d.target.score) && vis_by_link_score(d.score);
-                linkedByIndex[d.source.index + "," + d.target.index] = flag;
-                return flag ? "inline" : "none";
-            });
-            node.style("display", function (d) {
-                return (key0 || hasConnections(d)) && vis_by_type(d.type) && vis_by_node_score(d.score) ? "inline" : "none";
-            });
-            text.style("display", function (d) {
-                return (key0 || hasConnections(d)) && vis_by_type(d.type) && vis_by_node_score(d.score) ? "inline" : "none";
-            });
+           refreshComponents();
+        }
+    }
 
-            if (highlight_node !== null) {
-                if ((key0 || hasConnections(highlight_node)) && vis_by_type(highlight_node.type) && vis_by_node_score(highlight_node.score)) {
-                    if (focus_node !== null) set_focus(focus_node);
-                    set_highlight(highlight_node);
-                }
-                else {
-                    exit_highlight();
-                }
+    function refreshComponents(){
+        link.style("display", function (d) {
+            var flag = vis_by_type(d.source.type) && vis_by_type(d.target.type) && vis_by_node_score(d.source.score) && vis_by_node_score(d.target.score) && vis_by_link_score(d.score);
+            linkedByIndex[d.source.index + "," + d.target.index] = flag;
+            return flag ? "inline" : "none";
+        });
+        node.style("display", function (d) {
+            return (key0 || hasConnections(d)) && vis_by_type(d.type) && vis_by_node_score(d.score) ? "inline" : "none";
+        });
+        text.style("display", function (d) {
+            return (key0 || hasConnections(d)) && vis_by_type(d.type) && vis_by_node_score(d.score) ? "inline" : "none";
+        });
+
+        if (highlight_node !== null) {
+            if ((key0 || hasConnections(highlight_node)) && vis_by_type(highlight_node.type) && vis_by_node_score(highlight_node.score)) {
+                if (focus_node !== null) set_focus(focus_node);
+                set_highlight(highlight_node);
             }
-
+            else {
+                exit_highlight();
+            }
         }
     }
 
@@ -406,10 +413,18 @@ function forceDirectedLayout(jsonFile) {
     }
 
     function vis_by_node_score(score) {
+        
+        var thresholdValue = $("#ex1").slider('getValue');
+      //  console.log(thresholdValue);
+
         if (isNumber(score)) {
+            /*
             if (score >= 0.666) return keyh;
             else if (score >= 0.333) return keym;
             else if (score >= 0) return keyl;
+            */
+
+            return score < thresholdValue;
         }
         return true;
     }
