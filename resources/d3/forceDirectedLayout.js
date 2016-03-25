@@ -17,8 +17,8 @@ function forceDirectedLayout(jsonFile) {
     var text_center = false;
     var outline = false;
 
-    var min_score = 0;
-    var max_score = 1;
+    var min_score = 1199145600; // 01/01/2009
+    var max_score = 1262304000; // 01/01/2010
 
     var color = d3.scale.linear()
         .domain([min_score, (min_score + max_score) / 2, max_score])
