@@ -5,7 +5,7 @@
 
 
 
-function forceDirectedLayout(graphJSON) {
+function forceDirectedLayout(jsonFile) {
 
     var w = window.innerWidth;
     var h = window.innerHeight;
@@ -47,11 +47,11 @@ function forceDirectedLayout(graphJSON) {
     var max_base_node_size = 36;
     var min_zoom = 0.1;
     var max_zoom = 7;
-    var svg = d3.select("body").append("svg");
+    var svg = d3.select("#graphDisplay").append("svg");
     var zoom = d3.behavior.zoom().scaleExtent([min_zoom, max_zoom])
     var g = svg.append("g");
     svg.style("cursor", "move");
-
+    console.log(jsonFile);
     var graph = JSON.parse(jsonFile);
 
 
