@@ -17,7 +17,7 @@
 
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         {#form for requesting one specific personID#}
                         <form class="form-inline" role="form">
                             <div class="form-group">
@@ -26,7 +26,10 @@
                             <input type="button" class="btn btn-default" onclick="getNetworkForPerson()">Request</input>
                         </form>
                     </div>
-
+                    <div class="col-md-6">
+                        <h6>Filter by timestamp:</h6>
+                        <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/>
+                    </div>
                 </div>
             </div>
         </div>
