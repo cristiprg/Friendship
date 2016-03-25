@@ -1,0 +1,44 @@
+{% extends 'layout.html.twig' %}
+
+{% block title 'Image Gallery - ' %}
+
+{% block header %}
+    <h1>Gallery</h1>
+{% endblock %}
+
+{% block content  %}
+<div class="container">
+    <div class="panel panel-default Gallery">
+        <div class="panel-heading">
+            <h2>Image </h2>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">.col-md-4</div>
+                <div class="col-md-4">.col-md-4</div>
+                <div class="col-md-4">.col-md-4</div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">.col-md-4</div>
+                <div class="col-md-4">.col-md-4</div>
+                <div class="col-md-4">.col-md-4</div>
+            </div>
+        </div>
+        <div class="panel panel-default Gallery">
+            <div class="panel-heading">
+                <h2>Image </h2>
+            </div>
+            <div class="panel-body">
+                {% for item in images %}
+
+                    <div class="col-md-4">
+                        <img class="img-responsive" src="{{ app.request.baseUrl }}/img/{{ item }}"><br>
+                    </div>
+                {% else %}
+                    <p><strong>Sorry, no images, go f*ck yourself.</strong></p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'layout.html.twig' %}
+
+{% block title 'Network - ' %}
+
+{% block header %}
+    <h1>Network
+        <small>of one person</small>
+    </h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p>Request ID</p>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        {#form for requesting one specific personID#}
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <input type="number" class="form-control" id="personID" placeholder="Enter ID">
+                            </div>
+                            <input type="button" class="btn btn-default" onclick="getDataForPerson()">Request</input>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2> Network </h2>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12" id="graphDisplay">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
