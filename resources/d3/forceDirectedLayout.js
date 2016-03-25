@@ -7,8 +7,8 @@
 
 function forceDirectedLayout(jsonFile) {
 
-    var w = window.innerWidth;
-    var h = window.innerHeight;
+    var w = getWidth();
+    var h = getHeight();
 
     var keyc = true, keys = true, keyt = true, keyr = true, keyx = true, keyd = true, keyl = true, keym = true, keyh = true, key1 = true, key2 = true, key3 = true, key0 = true
 
@@ -306,7 +306,7 @@ function forceDirectedLayout(jsonFile) {
     });
 
     function resize() {
-        var width = window.innerWidth, height = window.innerHeight;
+        var width = getWidth(), height = getHeight();
         svg.attr("width", width).attr("height", height);
 
         force.size([force.size()[0] + (width - w) / zoom.scale(), force.size()[1] + (height - h) / zoom.scale()]).resume();
@@ -425,5 +425,13 @@ function forceDirectedLayout(jsonFile) {
 
     function isNumber(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    function getWidth(){
+        return document.getElementById("graphDisplay").offsetWidth;
+    }
+
+    function getHeight(){
+        return window.innerHeight;
     }
 }
