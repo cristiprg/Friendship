@@ -47,6 +47,10 @@ function forceDirectedLayout(jsonFile) {
     var max_base_node_size = 36;
     var min_zoom = 0.1;
     var max_zoom = 7;
+
+    // remove the existing canvas first
+    d3.select("#graphDisplay svg").remove();
+
     var svg = d3.select("#graphDisplay").append("svg");
     var zoom = d3.behavior.zoom().scaleExtent([min_zoom, max_zoom])
     var g = svg.append("g");

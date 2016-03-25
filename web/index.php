@@ -85,7 +85,7 @@ $app->get('/network', function() use ($app) {
 $app->get('/graph', function (Request $request) use ($app){
 
     // Extract the personID from the request.
-    $personID = $request->query->get('personID');
+    $personID = intval($request->query->get('personID'));
     if ($personID == null)
         throw new \Exception( 'Expected personID parameter not found in GET /graph request' );
 
@@ -101,15 +101,22 @@ $app->get('/graph', function (Request $request) use ($app){
     }
 
     // Construct the D3-friendly json with the two arrays: nodes and links.
-    $nodes = array();
+    $nodes[] = array('id'=>$personID, 'size'=>3, 'type'=>'square'); // index 0
     $links = array();
-    foreach ($ids as $id){
+
+    for ($index = 0; $index < count($ids); ++$index){
+
         $nodes[] = array(
-            'id' => $id,
+            'id' => $ids[$index],
             'size' => 3,
             'type' => 'circle'
         );
 
+        // with links, it gets a bit nasty because the indexes of the nodes have to be specified, instead of ids
+        $links[] = array(
+            'source' => 0,
+            'target' => $index+1
+        );
     }
 
     $response = array();
