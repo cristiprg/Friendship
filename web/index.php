@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/../bootstrap.php';
+require __DIR__ . '/../resources/util/util.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,8 +61,61 @@ $app->get('/resources/{fileName}', function ($fileName) use ($app) {
     return print_r("cacacaca");
 })->assert('fileName', '.+');
 
+
+/**
+ * //////////////////////////////////
+ * ///People network-related stuff///
+ * //////////////////////////////////
+ */
+
+/**
+ * The main network webpage
+ */
 $app->get('/network', function() use ($app) {
     return $app['twig']->render('network.html.twig');
+});
+
+
+/**
+ * Endpoint for the network of one person.
+ * @param personID:
+ * @return the JSON specific for the D3 force graph layout
+ *
+ */
+$app->get('/graph', function (Request $request) use ($app){
+
+    // Extract the personID from the request.
+    $personID = $request->query->get('personID');
+    if ($personID == null)
+        throw new \Exception( 'Expected personID parameter not found in GET /graph request' );
+
+    // Send the request to Neo4j server with the corresponding Cypher query.
+    $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[f:HAS*2]-(p2:Person) RETURN p2');
+    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+
+    // We are interested only in the personIDs and the next for loop iterates through the JSON
+    // response and collects all the personIDs in $ids
+    $ids = array();
+    foreach (json_decode($result, true)['data'] as $item){
+        array_push($ids, $item[0]['data']['personID']);
+    }
+
+    // Construct the D3-friendly json with the two arrays: nodes and links.
+    $nodes = array();
+    $links = array();
+    foreach ($ids as $id){
+        $nodes[] = array(
+            'id' => $id,
+            'size' => 3,
+            'type' => 'circle'
+        );
+
+    }
+
+    $response = array();
+    $response['nodes'] = $nodes;
+    $response['links'] = $links;
+    return json_encode($response);
 });
 
 $app->run();

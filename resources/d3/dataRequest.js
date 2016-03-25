@@ -2,7 +2,7 @@
  * Created by cristiprg on 25-3-16.
  */
 
-function getDataForPerson(){
+function getNetworkForPerson(){
     var personID = document.getElementById("personID").value;
     // var queryJSON = {
     //     "query" : "MATCH (p:Person {personID:'{personID}'})-[f:HAS*2]-(p2:Person) RETURN p,f,p2",
@@ -12,7 +12,7 @@ function getDataForPerson(){
     // };
 
     var queryJSON = {
-        "query" : "MATCH (p:Person {personID:'1'})-[f:HAS*2]-(p2:Person) RETURN p2" // dam toti prietenii lui 1
+        "query" : "MATCH (p:Person {personID:'4546'})-[f:HAS*2]-(p2:Person) RETURN p2" // dam toti prietenii lui 1
     };
 
     $.post("http://localhost:7474/db/data/cypher", queryJSON, bypassDataToGraphVisualization);
