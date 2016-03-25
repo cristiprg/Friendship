@@ -123,7 +123,7 @@ $app->get('/graph', function (Request $request) use ($app){
             'id' => $friends[$index]['personID'],
             'size' => 3,
             'type' => 'circle',
-            'score' => intval($friends[$index]['timestamp'])
+            'score' => intval($friends[$index]['timestamp']) == 0 ? null : intval($friends[$index]['timestamp'])
         );
 
         // with links, it gets a bit nasty because the indexes of the nodes have to be specified, instead of ids
