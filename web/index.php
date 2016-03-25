@@ -75,6 +75,13 @@ $app->get('/network', function() use ($app) {
     return $app['twig']->render('network.html.twig');
 });
 
+/**
+ * Endpoint for min-max timestamps of the network.
+ * @return JSON {min : <min>, max : <max> }
+ */
+$app->get('/graph/minmax', function () {
+    return json_encode(getMinMax());
+});
 
 /**
  * Endpoint for the network of one person.

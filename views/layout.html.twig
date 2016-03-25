@@ -21,6 +21,14 @@
                         return 'Current value: ' + value;
                     }
                 });
+
+                // adjust the range
+                $.get("graph/minmax", function (data) {
+                    data = JSON.parse(data);
+                    $("#ex1").slider('setAttribute', 'min', parseInt(data.min));
+                    $("#ex1").slider('setAttribute', 'max', parseInt(data.max));
+                    $("#ex1").slider('refresh');
+                })
             });
 
         </script>

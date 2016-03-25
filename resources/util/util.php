@@ -44,3 +44,20 @@ function CallAPI($method, $url, $data = false, $contentType = "application/json"
 
     return $result;
 }
+
+/**
+ * Gets the min and max timestamp from the network.
+ * @return response['min'], response['max']
+ */
+function getMinMax(){
+    $query = array( 'query' =>"MATCH (f:Friendship) WHERE toInt(f.timestamp)>0 RETURN min(f.timestamp), max(f.timestamp)");
+    $result = json_decode(CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($query)), true);
+
+    $min = $result['data'][0][0];
+    $max = $result['data'][0][1];
+
+    $response['min'] = $min;
+    $response['max'] = $max;
+
+    return $response;
+}
