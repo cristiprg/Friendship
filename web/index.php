@@ -85,31 +85,38 @@ $app->get('/network', function() use ($app) {
 $app->get('/graph', function (Request $request) use ($app){
 
     // Extract the personID from the request.
-    $personID = intval($request->query->get('personID'));
+    $personID = ($request->query->get('personID'));
     if ($personID == null)
         throw new \Exception( 'Expected personID parameter not found in GET /graph request' );
 
     // Send the request to Neo4j server with the corresponding Cypher query.
-    $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[f:HAS*2]-(p2:Person) RETURN p2');
+    // $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[f:HAS*2]-(p2:Person) RETURN p2'); //OLD QUERY
+    $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[:HAS*1..2]-(f:Friendship)-[:HAS]-(p2:Person) RETURN f,p2');
     $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
 
-    // We are interested only in the personIDs and the next for loop iterates through the JSON
-    // response and collects all the personIDs in $ids
-    $ids = array();
+    // We are interested only in the personIDs and timestamps and the next for loop iterates through the JSON
+    // response and collects all the personIDs and timestampt in $friends
+    // $friends = array (WHO, WHEN)
+    $friends = array();
     foreach (json_decode($result, true)['data'] as $item){
-        array_push($ids, $item[0]['data']['personID']);
+
+        $id = $item[1]['data']['personID'];
+        $timestamp = $item[0]['data']['timestamp'];
+
+        $friends[] = array('personID' => $id, 'timestamp' => $timestamp); // note: everything is string here
     }
 
     // Construct the D3-friendly json with the two arrays: nodes and links.
-    $nodes[] = array('id'=>$personID, 'size'=>3, 'type'=>'square'); // index 0
+    $nodes[] = array('id'=>$personID, 'size'=>3, 'type'=>'square', 'score'=>0); // index 0
     $links = array();
 
-    for ($index = 0; $index < count($ids); ++$index){
+    for ($index = 0; $index < count($friends); ++$index){
 
         $nodes[] = array(
-            'id' => $ids[$index],
+            'id' => $friends[$index]['personID'],
             'size' => 3,
-            'type' => 'circle'
+            'type' => 'circle',
+            'score' => intval($friends[$index]['timestamp'])
         );
 
         // with links, it gets a bit nasty because the indexes of the nodes have to be specified, instead of ids
