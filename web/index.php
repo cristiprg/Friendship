@@ -152,6 +152,51 @@ $app->get('/graph', function (Request $request) use ($app){
     return json_encode($response);
 });
 
+/**
+ * Endpoint for the time distribution of friendship establishments.
+ * The result is given in C3-friendly manner - one array for 'per hour', one for 'per month' and one 'per day'
+ * {
+ *  'per_hour': [1, 2, ..., 24],
+ *  'per_month': [1, 2, ..., 12],
+ *  'per_day': [1, 2, ..., 365]
+ * }
+ */
+$app->get('/timeDistribution', function () {
+    // 1. per hour
+    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN (( toInt(f.timestamp)/(3600))% 24) AS hour, count (*) ORDER BY hour');
+    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+
+    $perHourData = [];
+    foreach(json_decode($result, true)['data'] as $item){
+        $perHourData[] = $item[1];
+    }
+
+    // 2. per month - TODO: this is just an approximation - most likely a bad one
+    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN  (( toInt(f.timestamp)/(2592000))% 12)  AS month , count (*) ORDER BY month');
+    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+
+    $perMonthData = [];
+    foreach(json_decode($result, true)['data'] as $item){
+        $perMonthData[] = $item[1];
+    }
+
+    // .3 per day - TODO: I guess the same, doesn't look really good in the end. Must include here the logic rather than DB, since Neo4j handles dates badly.
+    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN  (( toInt(f.timestamp)/(86400))% 365)  AS day , count (*) ORDER BY day');
+    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+
+    $perDayData = [];
+    foreach(json_decode($result, true)['data'] as $item){
+        $perDayData[] = $item[1];
+    }
+
+
+
+    $response['per_hour'] = $perHourData;
+    $response['per_month'] = $perMonthData;
+    $response['per_day'] = $perDayData;
+    return json_encode($response);
+});
+
 $app->run();
 
 function skip($nodes, $personID){
