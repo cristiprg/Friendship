@@ -17,7 +17,7 @@
 
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         {#form for requesting one specific personID#}
                         <form class="form-inline" role="form">
                             <div class="form-group">
@@ -26,7 +26,19 @@
                             <input type="button" class="btn btn-default" onclick="getNetworkForPerson()">Request</input>
                         </form>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        {#dropdown select#}
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="sel1">Friends-degree:</label>
+                                <select class="form-control" id="friendsDegree">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
                         <h6>Filter by timestamp:</h6>
                         <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="1199145600" data-slider-max="1262304000" data-slider-step="1" data-slider-value="1262304000"/>
                     </div>

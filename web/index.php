@@ -86,6 +86,7 @@ $app->get('/graph/minmax', function () {
 /**
  * Endpoint for the network of one person.
  * @param personID:
+ * @param friendsDegree [optional]: max length of path from personID to returned friends; default = 1
  * @return the JSON specific for the D3 force graph layout
  *
  */
@@ -96,9 +97,14 @@ $app->get('/graph', function (Request $request) use ($app){
     if ($personID == null)
         throw new \Exception( 'Expected personID parameter not found in GET /graph request' );
 
+    $friendsDegree = 1;
+    if($request->query->has('friendsDegree')){
+        $friendsDegree = $request->query->get('friendsDegree');
+    }
+
     // Send the request to Neo4j server with the corresponding Cypher query.
     // $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[f:HAS*2]-(p2:Person) RETURN p2'); //OLD QUERY
-    $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[:HAS*1..3]-(f:Friendship)-[:HAS]-(p2:Person) WHERE toInt(f.timestamp)>0 RETURN DISTINCT f,p2');
+    $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[:HAS*1..'.($friendsDegree*2).']-(f:Friendship)-[:HAS]-(p2:Person) WHERE toInt(f.timestamp)>0 RETURN DISTINCT f,p2');
     $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
 
     // We are interested only in the personIDs and timestamps and the next for loop iterates through the JSON
