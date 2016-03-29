@@ -48,7 +48,7 @@
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h2> Network </h2>
+                <h4> Network </h4>
             </div>
             <div class="panel-body">
                 <div class="row">
@@ -58,8 +58,20 @@
                     </div>
 
                     {#The charts#}
-                    <div class="col-md-6" id="chartsDisplay">
-                        <script>displayTimeDistributionChart()</script>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h5>Statistics</h5></div>
+                            <div class="row">
+                                <div class="col-md-12" id="timeDistributionChart">
+                                    <script>displayTimeDistributionChart()</script>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="avgDegreeCentralityChart">
+                                    <script>displayAvgDegreeCentralityChart()</script>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
