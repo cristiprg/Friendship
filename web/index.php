@@ -98,7 +98,7 @@ $app->get('/graph', function (Request $request) use ($app){
 
     // Send the request to Neo4j server with the corresponding Cypher query.
     // $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[f:HAS*2]-(p2:Person) RETURN p2'); //OLD QUERY
-    $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[:HAS*1..2]-(f:Friendship)-[:HAS]-(p2:Person) RETURN f,p2');
+    $data = array('query' => 'MATCH (p:Person {personID:\''. $personID .'\'})-[:HAS*1..3]-(f:Friendship)-[:HAS]-(p2:Person) WHERE toInt(f.timestamp)>0 RETURN DISTINCT f,p2');
     $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
 
     // We are interested only in the personIDs and timestamps and the next for loop iterates through the JSON
@@ -117,7 +117,14 @@ $app->get('/graph', function (Request $request) use ($app){
     $nodes[] = array('id'=>$personID, 'size'=>3, 'type'=>'square', 'score'=>0); // index 0
     $links = array();
 
+    $skipped = 0;
     for ($index = 0; $index < count($friends); ++$index){
+
+        // TODO: this s**t is the mother of hacks
+        if (skip($nodes, $friends[$index]['personID'])){
+            ++$skipped;
+            continue;
+        }
 
         $nodes[] = array(
             'id' => $friends[$index]['personID'],
@@ -129,7 +136,7 @@ $app->get('/graph', function (Request $request) use ($app){
         // with links, it gets a bit nasty because the indexes of the nodes have to be specified, instead of ids
         $links[] = array(
             'source' => 0,
-            'target' => $index+1
+            'target' => $index + 1 - $skipped
         );
     }
 
@@ -141,6 +148,14 @@ $app->get('/graph', function (Request $request) use ($app){
 
 $app->run();
 
+function skip($nodes, $personID){
+    foreach ($nodes as $node) {
+        if ($node['id'] == $personID) {
+            return true;
+        }
+    }
+    return false;
+}
 
 
 
