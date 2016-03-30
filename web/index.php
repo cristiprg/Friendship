@@ -162,39 +162,45 @@ $app->get('/graph', function (Request $request) use ($app){
  * }
  */
 $app->get('/timeDistribution', function () {
-    // 1. per hour
-    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN (( toInt(f.timestamp)/(3600))% 24) AS hour, count (*) ORDER BY hour');
+
+    $data = array('query' => 'MATCH (n:facebookStats) RETURN n');
     $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+    $result = json_decode($result, true)['data'][0][0]['data']['stats'];
+    return $result; // don't encode here because the property itself of the node is a JSON.
 
-    $perHourData = [];
-    foreach(json_decode($result, true)['data'] as $item){
-        $perHourData[] = $item[1];
-    }
-
-    // 2. per month - TODO: this is just an approximation - most likely a bad one
-    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN  (( toInt(f.timestamp)/(2592000))% 12)  AS month , count (*) ORDER BY month');
-    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
-
-    $perMonthData = [];
-    foreach(json_decode($result, true)['data'] as $item){
-        $perMonthData[] = $item[1];
-    }
-
-    // .3 per day - TODO: I guess the same, doesn't look really good in the end. Must include here the logic rather than DB, since Neo4j handles dates badly.
-    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN  (( toInt(f.timestamp)/(86400))% 365)  AS day , count (*) ORDER BY day');
-    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
-
-    $perDayData = [];
-    foreach(json_decode($result, true)['data'] as $item){
-        $perDayData[] = $item[1];
-    }
-
-
-
-    $response['per_hour'] = $perHourData;
-    $response['per_month'] = $perMonthData;
-    $response['per_day'] = $perDayData;
-    return json_encode($response);
+//    // 1. per hour
+//    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN (( toInt(f.timestamp)/(3600))% 24) AS hour, count (*) ORDER BY hour');
+//    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+//
+//    $perHourData = [];
+//    foreach(json_decode($result, true)['data'] as $item){
+//        $perHourData[] = $item[1];
+//    }
+//
+//    // 2. per month - TODO: this is just an approximation - most likely a bad one
+//    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN  (( toInt(f.timestamp)/(2592000))% 12)  AS month , count (*) ORDER BY month');
+//    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+//
+//    $perMonthData = [];
+//    foreach(json_decode($result, true)['data'] as $item){
+//        $perMonthData[] = $item[1];
+//    }
+//
+//    // .3 per day - TODO: I guess the same, doesn't look really good in the end. Must include here the logic rather than DB, since Neo4j handles dates badly.
+//    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN  (( toInt(f.timestamp)/(86400))% 365)  AS day , count (*) ORDER BY day');
+//    $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
+//
+//    $perDayData = [];
+//    foreach(json_decode($result, true)['data'] as $item){
+//        $perDayData[] = $item[1];
+//    }
+//
+//
+//
+//    $response['per_hour'] = $perHourData;
+//    $response['per_month'] = $perMonthData;
+//    $response['per_day'] = $perDayData;
+//    return json_encode($response);
 });
 
 $app->run();
