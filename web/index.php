@@ -165,8 +165,12 @@ $app->get('/timeDistribution', function () {
 
     $data = array('query' => 'MATCH (n:facebookStats) RETURN n');
     $result = CallAPI("POST", "http://localhost:7474/db/data/cypher", json_encode($data));
-    $result = json_decode($result, true)['data'][0][0]['data']['stats'];
-    return $result; // don't encode here because the property itself of the node is a JSON.
+    $stats = json_decode($result, true)['data'][0][0]['data']['stats']; // returns JSON string
+    $time_distribution = json_decode($stats, true)['time_distribution'];
+
+    // don't encode here because the property itself of the node is a JSON (string).
+    // http://neo4j.com/docs/stable/rest-api-node-properties.html#rest-api-property-values-can-not-be-nested
+    return json_encode($time_distribution);
 
 //    // 1. per hour
 //    $data = array('query' => 'MATCH (f:Friendship) WHERE  toInt(f.timestamp)>0 RETURN (( toInt(f.timestamp)/(3600))% 24) AS hour, count (*) ORDER BY hour');
