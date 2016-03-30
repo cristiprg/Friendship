@@ -13,13 +13,14 @@ function displayTimeDistributionChart(){
     $.get('timeDistribution', function(response){
         var chartData = JSON.parse(response);
         chartData.per_hour.unshift('per_hour');
+        chartData.per_week_day.unshift('per_week_day');
 
         console.log(chartData.per_day);
 
         timeDistributionChart = c3.generate({
             bindto: '#timeDistributionChart',
             data: {
-                columns: [chartData.per_hour],
+                columns: [chartData.per_hour, chartData.per_week_day],
                 type: 'bar'
             }
         });
