@@ -25,6 +25,8 @@ function displayTimeDistributionChart(){
             }
         });
 
+        addChartTitle("#timeDistributionChart", "Distribution over day-hour/week-day (histogram)");
+
     });
 }
 
@@ -49,5 +51,16 @@ function displayAvgDegreeCentralityChart(){
                 }
             }
         });
+
+        addChartTitle("#avgDegreeCentralityChart", "Cumulative Distribution");
     });
+}
+
+function addChartTitle(chartID, title){
+    d3.select(chartID +' svg').append('text')
+        .attr('x', d3.select(chartID +' svg').node().getBoundingClientRect().width / 2)
+        .attr('y', 16)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '1.4em')
+        .text(title);
 }
