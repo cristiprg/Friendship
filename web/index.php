@@ -207,6 +207,13 @@ $app->get('/timeDistribution', function () {
 //    return json_encode($response);
 });
 
+$app->get('/personDegreeCentrality', function (Request $request){
+    $personID = $personID = ($request->query->get('personID'));
+    $fileName = "FriendID" . intval($personID) . ".json";
+    $filePath = __DIR__ . '/../resources/data_temporarily/' . $fileName;
+    return file_get_contents($filePath);
+});
+
 $app->run();
 
 function skip($nodes, $personID){

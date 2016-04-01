@@ -15,7 +15,7 @@ function displayTimeDistributionChart(){
         chartData.per_hour.unshift('per_hour');
         chartData.per_week_day.unshift('per_week_day');
 
-        console.log(chartData.per_day);
+        //console.log(chartData.per_day);
 
         timeDistributionChart = c3.generate({
             bindto: '#timeDistributionChart',
@@ -29,7 +29,7 @@ function displayTimeDistributionChart(){
 
     });
 }
-
+// extermely misleading name LOL, it's just cumulative distribution
 function displayAvgDegreeCentralityChart(){
     document.getElementById("avgDegreeCentralityChart").style.height = "200px";
 
@@ -37,7 +37,7 @@ function displayAvgDegreeCentralityChart(){
         var chartData = JSON.parse(response);
         chartData.cumulative.ticks.unshift('x');
         chartData.cumulative.values.unshift('friendships');
-        console.log(chartData);
+        //console.log(chartData);
 
         avgDegreeCentralityChart = c3.generate({
             bindto: '#avgDegreeCentralityChart',
@@ -54,6 +54,63 @@ function displayAvgDegreeCentralityChart(){
 
         addChartTitle("#avgDegreeCentralityChart", "Cumulative Distribution");
     });
+}
+
+function displayPersonDegreeCentrality (personID){
+    document.getElementById("personDegreeCentrality").style.height = "200px";
+
+    if (parseInt(personID) == -1) {
+        displayPlaceholder("#personDegreeCentrality");
+    }
+    else {
+
+
+        $.get('personDegreeCentrality?personID=' + parseInt(personID), function (response) {
+            var chartData = JSON.parse(response);
+
+            // replace unix timestamps by dates
+            chartData.degree_centrality.time.forEach(function(part, index, theArray) {
+                theArray[index] = tm(theArray[index]);
+            });
+
+            chartData.degree_centrality.time.unshift('x');
+            chartData.degree_centrality.values.unshift('centrality');
+            console.log(chartData);
+
+
+            personDegreeCentrality = c3.generate({
+                bindto: '#personDegreeCentrality',
+                data: {
+                    x: 'x',
+                    columns: [chartData.degree_centrality.time, chartData.degree_centrality.values]
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries'
+                    }
+                }
+            });
+        });
+    }
+
+    addChartTitle("#personDegreeCentrality", "Node Centrality");
+}
+
+function displayPlaceholder(chartID){
+    c3.generate({
+        bindto: chartID,
+        data: {
+            x: 'x',
+            columns: []
+        }
+    });
+
+}
+
+function tm(unix_tm) {
+    var dt = new Date(unix_tm*1000);
+    return dt.getFullYear() + '-' + dt.getMonth() + '-' + dt.getDay();
+
 }
 
 function addChartTitle(chartID, title){

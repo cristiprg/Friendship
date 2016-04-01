@@ -8,6 +8,8 @@ function getNetworkForPerson(){
     var friendsDegree = e.options[e.selectedIndex].value;
 
     $.get('graph?personID=' + personID + "&friendsDegree=" + friendsDegree, bypassDataToGraphVisualization);
+
+    displayPersonDegreeCentrality(personID);
 }
 
 function bypassDataToGraphVisualization(response, status) {
